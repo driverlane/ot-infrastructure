@@ -18,7 +18,7 @@
       "type": "string",
       "defaultValue": "https://bitbucket.org/teamdriverlane/ot-infrastructure/raw/435fa429985727cf156eca517da2c594bd97880f/",
       "metadata": {
-        "description": "Path to the root template"
+        "description": "Path to the URI where the templates are hosted"
       }
     },
     "windowsOSVersion": {
