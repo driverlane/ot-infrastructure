@@ -16,9 +16,6 @@
     },
     "subnetRef": {
       "type": "string"
-    },
-    "virtualNetworkName": {
-      "type": "string"
     }
   },
   "variables": {
@@ -31,9 +28,6 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
-      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -54,7 +48,6 @@
       "name": "[variables('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {

@@ -16,7 +16,7 @@
     },
     "baseTemplateUri": {
       "type": "string",
-      "defaultValue": "https://bitbucket.org/teamdriverlane/ot-infrastructure/raw/435fa429985727cf156eca517da2c594bd97880f/",
+      "defaultValue": "https://raw.githubusercontent.com/driverlane/ot-infrastructure/master/",
       "metadata": {
         "description": "Path to the URI where the templates are hosted"
       }
@@ -78,6 +78,10 @@
     },
     {
       "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[variables('storageAccountName')]",
+        "[variables('virtualNetworkName')]"
+      ],
       "name": "OTDSDeployment",
       "type": "Microsoft.Resources/deployments",
       "properties": {
