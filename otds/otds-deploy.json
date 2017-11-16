@@ -11,7 +11,7 @@
     "windowsOSVersion": {
       "type": "string"
     },
-    "storageAccountName": {
+    "storageAccountId": {
       "type": "string"
     },
     "subnetRef": {
@@ -87,7 +87,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob]"
+            "storageUri": "[reference(parameters('storageAccountId').primaryEndpoints.blob]"
           }
         }
       }

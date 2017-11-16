@@ -100,14 +100,11 @@
           "windowsOSVersion": {
             "value": "[parameters('windowsOSVersion')]"
           },
-          "storageAccountName": {
-            "value": "[variables('storageAccountName')]"
+          "storageAccountId": {
+            "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
           },
           "subnetRef": {
             "value": "[variables('subnetRef')]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
           }
         }
       }
