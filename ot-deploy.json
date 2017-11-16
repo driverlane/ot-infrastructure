@@ -100,8 +100,8 @@
           "windowsOSVersion": {
             "value": "[parameters('windowsOSVersion')]"
           },
-          "storageAccountId": {
-            "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+          "storageUri": {
+            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
           },
           "subnetRef": {
             "value": "[variables('subnetRef')]"
