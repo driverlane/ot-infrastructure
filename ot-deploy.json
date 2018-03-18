@@ -33,15 +33,19 @@
       "metadata": {
         "description": "The Windows version for the virtual machines"
       }
+    },
+    "appWorks": {
+      "type": "string",
+      "allowedValues": [
+        "yes",
+        "no"
+      ]
     }
   },
   "variables": {
     "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
-    "addressPrefix": "10.0.0.0/16",
-    "subnetName": "Subnet",
-    "subnetPrefix": "10.0.0.0/24",
-    "virtualNetworkName": "[concat('vnet-', uniquestring(resourceGroup().id))]",
-    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+    "vnetName": "vnet-",
+    "subnetName": "subnet-1"
   },
   "resources": [
     {
@@ -56,34 +60,62 @@
       "properties": {}
     },
     {
-      "apiVersion": "2016-03-30",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
-      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('vnetName')]",
+      "parameters": {
+        "subnetName": "variables('subnetName')",
+        "vnetName": "variables('vnetName')"
+      },
       "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
-            }
-          }
-        ]
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('baseTemplateUri'),'shared/create-vnet.json')]",
+          "contentVersion": "1.0.0.0"
+        }
       }
     },
     {
       "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "OTCSDeployment",
       "dependsOn": [
         "[variables('storageAccountName')]",
-        "[variables('virtualNetworkName')]"
+        "[variables('vnetName')]"
       ],
-      "name": "OTDSDeployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('baseTemplateUri'),'content-server/otcs-deploy.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "windowsOSVersion": {
+            "value": "[parameters('windowsOSVersion')]"
+          },
+          "storageUri": {
+            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+          },
+          "subnetRef": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
+      "name": "OTDSDeployment",
+      "dependsOn": [
+        "[variables('storageAccountName')]",
+        "[variables('vnetName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -104,7 +136,41 @@
             "value": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
           },
           "subnetRef": {
-            "value": "[variables('subnetRef')]"
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "AppworksDeployment",
+      "condition": "[equals(parameters('appWorks'),'yes')]",
+      "dependsOn": [
+        "[variables('storageAccountName')]",
+        "[variables('vnetName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('baseTemplateUri'),'otds/otds-deploy.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "windowsOSVersion": {
+            "value": "[parameters('windowsOSVersion')]"
+          },
+          "storageUri": {
+            "value": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+          },
+          "subnetRef": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
           }
         }
       }

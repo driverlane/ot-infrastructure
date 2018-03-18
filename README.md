@@ -1,6 +1,6 @@
 # OT Infrastructure
 
-Process for creation of an OpenText solution environment - starting with Azure ARM Templates. Will look at Terraform later (and if there's interest).
+Process for creation of an OpenText ECM solution environment - starting with Azure ARM Templates. Will look at Terraform later (and if there's interest).
 
 This is early days -so nothing much here yet...
 

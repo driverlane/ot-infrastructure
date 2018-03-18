@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "vnet-",
+      "metadata": {
+        "description": "Name for the first subnet"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "subnet-1",
+      "metadata": {
+        "description": "Name for the first subnet"
+      }
+    }
+  },
+  "variables": {
+    "addressPrefix": "10.0.0.0/16",
+    "subnetPrefix": "10.0.0.0/24",
+    "name": "[concat(parameters('vnetName'), uniquestring(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('name')]",
+      "location": "[resourceGroup().location]",
+      "comments": "Virtual network for overall solution",
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "dependsOn": [],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "status": {
+      "type": "string",
+      "value": "concat('Virtual network ', [parameters('vnetName')], ' created in ', resourceGroup().name)"
+    }
+  }
+}
